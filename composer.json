@@ -1,0 +1,16 @@
+{
+    "name": "xiphe/thewptools",
+    "description": "A loose collection of functions for wordpress.",
+    "authors": [
+        {
+            "name": "Hannes Diercks",
+            "email": "info@xiphe.net"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "ikimea/browser": "dev-master",
+        "duvanmonsa/php-query": "dev-master",
+        "xiphe/thetools": "~1.0"
+    }
+}
