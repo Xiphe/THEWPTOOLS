@@ -22,6 +22,9 @@ and i will try to answer.
 Changelog
 ---------
 
+### 1.0.2
++ add excerpt/content getters
+
 ### 1.0
 + initiation as standalone package
 + added to composer
