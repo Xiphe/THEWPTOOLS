@@ -11,6 +11,102 @@ namespace Xiphe;
  */
 class THEWPTOOLS {
 
+    private static $_excerpts = array();
+
+
+    public static function getExcerpt($post = null, $maxlength = 140, $force = false, $end = '[...]')
+    {
+        return apply_filters('the_content', self::_getExcerpt($post, $maxlength, $force, $end));
+    }
+
+    private static function _getExcerpt($post = null, $maxlength = 140, $force = false, $end = '[...]')
+    {
+        if (null === $post && isset($GLOBALS['post'])) {
+            $post = $GLOBALS['post'];
+        }
+
+        if (!isset($post->ID)) {
+            return '';
+        }
+
+        if (isset(self::$_excerpts[$post->ID])) {
+            return self::$_excerpts[$post->ID];
+        }
+
+        if (trim($post->post_excerpt) !== '') {
+            $excerpt = $post->post_excerpt;
+        } elseif(preg_match('/<!--more-->/', $post->post_content)) {
+            $excerpt = substr($post->post_content, 0, strpos($post->post_content, "<!--more-->"));
+        } else {
+            $excerpt = self::shorten($post->post_content, $maxlength, $end);
+        }
+
+        if ($force && strlen($excerpt) > $maxlength) {
+            $excerpt = self::shorten($excerpt, $maxlength, $end);
+        }
+
+        self::$_excerpts[$post->ID] = $excerpt;
+
+        return $excerpt;
+    }
+
+    public static function getContent($post = null)
+    {
+        if (null === $post && isset($GLOBALS['post'])) {
+            $post = $GLOBALS['post'];
+        }
+
+        if (!isset($post->ID)) {
+            return '';
+        }
+
+        if (trim($post->post_excerpt) !== '') {
+            $content = $post->post_content;
+        } else {
+            $content = str_replace(self::_getExcerpt($post), '', $post->post_content);
+        }
+
+        return apply_filters('the_content', $content);
+    }
+
+    public static function hasExcerpt($post = null)
+    {
+        if (null === $post && isset($GLOBALS['post'])) {
+            $post = $GLOBALS['post'];
+        }
+
+        if (!isset($post->ID)) {
+            return false;
+        }
+
+        return (trim($post->post_excerpt) !== '' || preg_match('/<!--more-->/', $post->post_content));
+    }
+
+    /**
+     * Builds an excerpt from a longer text.
+     *
+     * @param string  $text      the input text
+     * @param integer $maxlength maximal length of the text
+     * @param string  $end       a string that will be attached to the short version of $text
+     *
+     * @return string
+     */
+    public static function shorten($text, $maxlength = 140, $end = '[...]') {
+        $maxlength++;
+        if (mb_strlen($text) > $maxlength) {
+            $subex = mb_substr($text, 0, $maxlength - 5);
+            $exwords = explode(' ', $subex);
+            $excut = - (mb_strlen($exwords[count($exwords)-1]));
+            if ($excut < 0) {
+                $text = mb_substr($subex, 0, $excut);
+            } else {
+                $text = $subex;
+            }
+            $text .= $end;
+        }
+        return $text;
+    }
+
     public static function relUrl($url) {
         $rurl = parse_url(get_bloginfo('url'));
         if (isset($rurl['path'])) {
