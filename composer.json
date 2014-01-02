@@ -13,7 +13,7 @@
     "minimum-stability": "beta",
     "require": {
         "ikimea/browser": "dev-master",
-        "duvanmonsa/php-query": "dev-master",
+        "electrolinux/phpquery": "dev-master",
         "xiphe/thetools": "~1.0"
     },
     "autoload": {
